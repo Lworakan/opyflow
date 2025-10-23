@@ -10,6 +10,8 @@ import sys
 # sys.path.append('/folder/toward/opyf') (eventually add directly the opyf package folder if not installed)
 import opyf
 import matplotlib.pyplot as plt
+import cv2
+import numpy as np
 # plt.ion()
 import os
 os.chdir("./") # if run in the folder of the video
@@ -27,7 +29,9 @@ plt.ion()
 plt.close('all')
 
 #Path toward the video file
-filePath = './2018.07.04_Station_fixe_30m_sample.mp4'
+filePath = '/Users/worakanlasudee/Documents/GitHub/Flood_speed/RIVeR/examples/data/videos/nadir/canuelas.mp4'
+# filePath = '/Users/worakanlasudee/Documents/GitHub/Flood_speed/opyflow/782844710.136758.mp4'
+# filePath = "/Users/worakanlasudee/Downloads/782845131.156138.mp4"
 #set the object information
 video = opyf.videoAnalyzer(filePath) # 
 # video = opyf.videoAnalyzer(filePath, imageROI=[100, 200, 1000, 600]) # 
@@ -39,7 +43,12 @@ this manipualtion create an object [video] that contains information deduced fro
 #%% ######################
 
 
-video.set_vecTime(Ntot=10, shift=1, step=2, starting_frame=20)
+video.set_vecTime(
+    starting_frame=0,
+    step=1,                # ใช้ทุกเฟรม
+    shift=1,
+    Ntot=89              # 425 เฟรมทั้งหมด - 1
+)
 print(video.vec, '\n', video.prev)
 """
 #Use .set_vecTime vector to define the processing plan 
@@ -230,3 +239,4 @@ video.extractTracks(display='quiver', displayColor=True,
 # tracks can be saved in csv file
 video.writeTracks(outFolder='./export_Tracks')
 #when wrtiting it is possible to specify the out folder
+

@@ -12,7 +12,7 @@ matplotlib.use('TkAgg')
 plt.ion()
 plt.close('all')
 #Path toward the video file
-filePath = './2018.07.04_Station_fixe_30m_sample.mp4'
+filePath = '/Users/worakanlasudee/Documents/GitHub/Flood_speed/RIVeR/examples/data/videos/nadir/canuelas.mp4'
 #set the object information
 video = opyf.videoAnalyzer(filePath)
 #%%
