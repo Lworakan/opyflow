@@ -1,200 +1,197 @@
-﻿
-# About
+# Flood Polygon Analyzer - Usage Guide
 
-OpyFlow : Python package for Optical Flow measurements
+## Command Line Arguments
 
-Opyflow is a basic image velocimetry tool to simplify your *video* or *frame sequences* processing.
+The script now supports command-line arguments for flexible video input and configuration.
 
-It is based on `opencv` and `vtk` libraries to detect Good Features to Track (GFT), calculate their displacements by the Lukas Kanade method and interpolate them on a mesh. This method is sometimes called Feature Image Velocimetry or Feature Tracking. It is an alternative to the classical cross-correlation techniques employed in Particle Image Velocimetry (PIV). Compared to this technique, GFT+OpticalFlow may result in better performance when image qualities are poor for velocimetry, i.e. when velocity information on frames is non-uniform.
+### Basic Usage
 
-For flow calculations, the process is mainly inspired by the openCV python sample [lktrack.py](https://github.com/opencv/opencv/blob/master/samples/python/lk_track.py).
+```bash
+# Use default video
+python flood_polygon_analyzer.py
 
-The package also contains some rendering tools built with matplotlib. Velocities can be exported (csv, tecplot, vtk, hdf5).
+# Specify a custom video
+python flood_polygon_analyzer.py --video /path/to/your/flood_video.mp4
 
-Author: Gauthier Rousseau
-
-Corresponding e-mail : <gauthier.rousseau@gmail.com>
-
-## Quick Start
-
-To quickly get started with OpyFlow, follow these steps:
-
-1. Ensure you have Python installed in your environment.
-2. Open your terminal and run the following command to install OpyFlow and its main dependencies (matplotlib, vtk, and opencv):
-
-   ```shell
-   pip install opyf
-   ```
-
-   Alternatively, if you have the OpyFlow repository cloned locally, you can run:
-
-   ```shell
-   python3 -m pip install ./
-   ```
-
-3. This will automatically install the OpyFlow library and its dependencies.
-
-To analyze a frame sequence (e.g., PNG, BMP, JPEG, TIFF), use the following code:
-
-```python
-import opyf
-analyzer = opyf.frameSequenceAnalyzer("folder/toward/images")
+# Short form
+python flood_polygon_analyzer.py -v /path/to/your/flood_video.mp4
 ```
 
-For analyzing a video (e.g., MP4, AVI, MKV), use the following code:
+### Advanced Options
 
-```python
-analyzer = opyf.videoAnalyzer("video/file/path")
+```bash
+# Specify video and background frame
+python flood_polygon_analyzer.py --video video.mp4 --frame 30
+
+# With scaling parameters
+python flood_polygon_analyzer.py -v video.mp4 --fps 30 --scale 0.02
+
+# Full example with all options
+python flood_polygon_analyzer.py \
+  --video /path/to/flood.mp4 \
+  --frame 25 \
+  --fps 25 \
+  --scale 0.015
 ```
 
-To perform your first analysis, run the following code:
+### Command Line Options
 
-```python
-analyzer.extractGoodFeaturesAndDisplacements()
+| Option | Short | Type | Default | Description |
+|--------|-------|------|---------|-------------|
+| `--video` | `-v` | string | canuelas.mp4 | Path to input video file |
+| `--frame` | `-f` | int | 20 | Frame number for static background |
+| `--fps` | | float | None | Frames per second (for time scaling) |
+| `--scale` | | float | None | Meters per pixel (for spatial scaling) |
+| `--help` | `-h` | | | Show help message and exit |
+
+### Examples
+
+#### 1. Analyze a specific flood video
+
+```bash
+python flood_polygon_analyzer.py --video /Users/worakanlasudee/Documents/flood_event_2024.mp4
 ```
 
-OpyFlow package includes two frames and one video for testing and self-practice:
+#### 2. Use frame 50 as background
 
-1. The two frames were extracted from the frame sequence of the Test case A of the *PIV Challenge 2014*:
-
-   ![PIV challenge](tests/Test_case_PIV_Challenge_2014/gif/example_PIV_challenge.gif)
-
-   When applied to the entire dataset, OpyFlow can produce the above result (see [Test PIV Challenge 2014 - Case A](tests/Test_case_PIV_Challenge_2014/testPIVChallengeCaseA.md) for details on the procedure).
-
-2. The video is a bird's eye view video of a stream river taken by a drone, from which surface velocities can be extracted (see this [tutorial](tests/Test_Navizence/opyf_Navizence_velocimetry_UAV.md) for different possible procedures or the following [python file](tests/Test_Navizence/test_opyf_Navizence.py)):
-
-   ![bird's eye view Navizence](tests/Test_Navizence/gif/example_Navizence_Drone.gif)
-
-3. A guide is also provided to obtain the free surface velocity in a river from two amateur videos:  
-   [Stabilization, orthorectification (bird's eye view transformation), and free surface velocity estimation on the Brague river with OpyFlow](tests/Test_Brague_flood/test_opyf_LSPIV_Brague.md)
-
-   []()<img src="tests/Test_Brague_flood/figure_Brague.png" width=700>
-
-## Contents
-
-This repository is organized as follows:
-
-The setup file:
-
-- setup.py
-
-The package Folder opyf:
-
-- opyf
-  - Analyzer.py
-  - Track.py
-  - Interpolate.py
-  - Files.py
-  - Filters.py
-  - Render.py
-  - Tools.py
-  - custom_cmap.py (based on Chris Slocum file)
-
-- test
-  - Test_case_PIV_Challenge_2014
-  - Test_land_slide_youtube_video
-  - Test_Navizence
-  - Test_Brague_flood
-
-A test on synthetic images is still required.
-
-## Installation with anaconda
-
-The package requires python and basic python package: csv, numpy, matplotlib, tqdm, hdf5. Main dependencies are: OpenCV and VTK.
-
-If the `pip install opyf` command above does not work for you, an alternative way to deal with dependencies is using miniconda or anaconda.
-
-When miniconda/anaconda is installed you may create an environment (here called *opyfenv*). To create the environment type in the terminal:
-
-```shell
-conda create -n opyfenv python=3.11
+```bash
+python flood_polygon_analyzer.py -v flood.mp4 --frame 50
 ```
 
-This command line will install an environment with python 3.11 and the main dependencies.
+#### 3. With real-world scaling
 
-You can access to your environment by typing:
-
-```shell
-conda activate opyfenv
-```
-### Installation using the standard python protocol to create a virtual environment
-
-You can also use the standard python protocol (run the command where you want to put the environment):
-
-```shell
-python -m venv opyfenv
-source opyfenv/bin/activate
+```bash
+# 30 fps video, 2cm per pixel
+python flood_polygon_analyzer.py \
+  -v flood.mp4 \
+  --fps 30 \
+  --scale 0.02
 ```
 
-From you environment, you should be able to install opyf with `pip install opyf`.
+#### 4. Get help
 
-For development mode, you may also install the libraries individually with pip:
-
-```shell
-pip install ipython vtk opencv-python tqdm h5py matplotlib scipy ipykernel PyQt6
+```bash
+python flood_polygon_analyzer.py --help
 ```
 
-And set the opyf repository in your PATH or in the beginning of your python script using:
+Output:
+```
+usage: flood_polygon_analyzer.py [-h] [-v VIDEO] [-f FRAME] [--fps FPS] [--scale SCALE]
 
-```python
-import sys
-sys.path.append("path/toward/opyf/src")
+Interactive Flood Area Analyzer with Speed Visualization
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -v VIDEO, --video VIDEO
+                        Path to the input video file (MP4, AVI, etc.)
+  -f FRAME, --frame FRAME
+                        Frame number to use as static background (default: 20)
+  --fps FPS             Frames per second for time scaling (optional)
+  --scale SCALE         Meters per pixel for spatial scaling (optional)
+
+Examples:
+  python flood_polygon_analyzer.py --video /path/to/flood_video.mp4
+  python flood_polygon_analyzer.py -v /path/to/flood_video.mp4 --frame 30
+  python flood_polygon_analyzer.py --help
 ```
 
-Tested on:
-   - Python: 3.11
-   - VTK: 9.2.6
-   - OpenCV: 4.7
-   - NumPy: 1.24
-   - Matplotlib: 3.7.1
+## Workflow
 
-## Citation
+### 1. Launch with your video
 
-This package has been developed in the course of my PhD at EPFL to study [Turbulent flows over rough permeable beds](https://infoscience.epfl.ch/record/264790/files/EPFL_TH9327.pdf). Outputs are visible in the manuscript as well as in this [Video](https://www.youtube.com/watch?v=JmwE-kL0kTk) where paraview animations have been rendered thanks to opyf outputs.
+```bash
+python flood_polygon_analyzer.py -v my_flood_video.mp4
+```
 
-@PhdThesis{rousseau2019turbulent,
-  title={Turbulent flows over rough permeable beds in mountain rivers: Experimental insights and modeling},
-  author={Rousseau, Gauthier},
-  year={2019},
-  institution={EPFL}
-}
+### 2. Draw regions of interest
 
-An article published in *Experiments in Fluids* is available in Open Access : [Scanning PIV of turbulent flows over and through rough porous beds using refractive index matching](https://link.springer.com/article/10.1007/s00348-020-02990-y)
+- Select **Polygon** or **Circle** mode
+- Draw shapes around flood areas
+- Right-click to close polygons
 
-Follow this [link](https://link.springer.com/article/10.1007/s00348-020-02990-y#appendices) to directly access to the annex of the article presenting the opyf algorithms and tests.
+### 3. Analyze flow
 
-@article{rousseau2020scanning,
-  title={Scanning PIV of turbulent flows over and through rough porous beds using refractive index matching},
-  author={Rousseau, Gauthier and Ancey, Christophe},
-  journal={Experiments in Fluids},
-  volume={61},
-  number={8},
-  pages={1--24},
-  year={2020},
-  publisher={Springer}
-}
+- **Analyze Flow**: See velocity vectors inside shapes only
+- **Show Fastest**: Highlight fastest flood areas
+- **Speed vs Time**: Plot temporal evolution
 
-## Other research utilizing opyFlow
+### 4. Export results
 
-[Dedieu, B., Rousseau, H., Chauchat, J., & Frey, P. (2024). Exploring the size ratio impact on an intruder segregating in bedload transport. Physical Review Fluids, 9(10), 104302.](https://journals.aps.org/prfluids/abstract/10.1103/PhysRevFluids.9.104302)
+- **Save**: Save shapes to reload later
+- **Export**: Generate CSV/HDF5/JSON files
 
-[Rousseau, H., Chauchat, J., & Frey, P. (2022). Experiments on a single large particle segregating in bedload transport. Physical Review Fluids, 7(6), 064305.](https://journals.aps.org/prfluids/abstract/10.1103/PhysRevFluids.7.064305)
+## Tips
 
-[Rousseau G, Métivet T, Rousseau H, Daviet G, Bertails-Descoubes F. Revisiting the role of friction coefficients in granular collapses: confrontation of 3-D non-smooth simulations with experiments. Journal of Fluid Mechanics. 2023;975:A14. doi:10.1017/jfm.2023.835
-](https://www.cambridge.org/core/journals/journal-of-fluid-mechanics/article/revisiting-the-role-of-friction-coefficients-in-granular-collapses-confrontation-of-3d-nonsmooth-simulations-with-experiments/AC4302004B88F409DD3616DFA075994A)
+### Choosing the Right Background Frame
 
-[Vigoureux, S. et al. (2022). Comparison of Streamflow Estimated by Image Analysis (LSPIV) and by Hydrologic and Hydraulic Modelling on the French Riviera During November 2019 Flood. In: Gourbesville, P., Caignaert, G. (eds) Advances in Hydroinformatics. Springer Water. Springer, Singapore. https://doi.org/10.1007/978-981-19-1600-7_16](https://link.springer.com/chapter/10.1007/978-981-19-1600-7_16)
+The `--frame` parameter selects which frame to display as the static background:
 
-[Rousseau G, Ancey C. An experimental investigation of turbulent free-surface flows over a steep permeable bed. Journal of Fluid Mechanics. 2022;941:A51. doi:10.1017/jfm.2022.310 ](https://www.cambridge.org/core/journals/journal-of-fluid-mechanics/article/an-experimental-investigation-of-turbulent-freesurface-flows-over-a-steep-permeable-bed/E7D19E212687A82479AABD0852FE3DC5)
+- **Early frames (0-10)**: Use if flood hasn't started yet
+- **Mid frames (15-30)**: Good for most videos, shows partial flood
+- **Later frames (30+)**: Use if you want to see peak flood conditions
 
-[Rousseau G, Pascal I., Ancey C, Modeling turbulent stream flows over rough permeable beds, River Flow 2020 ](https://hal.science/hal-03109313/document)
+Try different values to find the clearest view of your flood area.
 
-[You Tube Video of River Flow 2020 talk by Rousseau G on the EPFL-LHE Channel](https://www.youtube.com/watch?v=zZKKZUPFIFM)
+### Scaling Your Data
 
-### Contributors and credits
+Use `--fps` and `--scale` to convert from pixels/frame to real units:
 
-Hugo Rousseau, Mohamed Nadeem, LHE team and others
+```bash
+# If your video is 25 fps and each pixel = 0.015 meters
+python flood_polygon_analyzer.py -v video.mp4 --fps 25 --scale 0.015
 
-Credits for UAV video : Bob de Graffenried
+# Output will be in m/s instead of px/frame
+```
 
-Credits for 2019 flood video on Brague River (Biot, French Riviera) : Pierre Brigode
+### Error: Video file not found
+
+If you see:
+```
+ERROR: Video file not found: /path/to/video.mp4
+```
+
+Solutions:
+1. Check the path is correct
+2. Use absolute path instead of relative
+3. Verify file exists: `ls -la /path/to/video.mp4`
+
+### Error: Could not load frame
+
+If you see:
+```
+ERROR: Could not load frame 50 from video
+```
+
+The video might be shorter than expected. Try:
+```bash
+# Use an earlier frame
+python flood_polygon_analyzer.py -v video.mp4 --frame 10
+```
+
+## File Outputs
+
+When you export, these files are created:
+
+1. **flood_shapes.json** - Saved polygons/circles
+2. **shape_flow_statistics.json** - Velocity stats for each shape
+3. **flow_speed_over_time.csv** - Temporal data (if you used Speed vs Time)
+4. **frame_X_to_Y.csv** - Full velocity field
+5. **frame_X_to_Y.hdf5** - Velocity field (compressed)
+
+## Quick Reference
+
+```bash
+# Most common usage patterns:
+
+# 1. Quick analysis with default settings
+python flood_polygon_analyzer.py -v my_video.mp4
+
+# 2. Choose background frame
+python flood_polygon_analyzer.py -v my_video.mp4 -f 25
+
+# 3. Real-world units
+python flood_polygon_analyzer.py -v my_video.mp4 --fps 30 --scale 0.02
+
+# 4. See all options
+python flood_polygon_analyzer.py --help
+```
